@@ -35,6 +35,7 @@ public static class CoinbaseAdvancedTradeServiceCollectionExtensions
 
         services.AddTransient<CoinbaseAuthenticationHandler>();
 
+        //TODO: Review Implementation
         services.AddHttpClient<ICoinbaseHttpClient, CoinbaseHttpClient>((sp, client) =>
             {
                 var options = sp.GetRequiredService<IOptionsMonitor<CoinbaseAdvancedTradeOptions>>().CurrentValue;
