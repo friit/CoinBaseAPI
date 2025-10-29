@@ -1,0 +1,45 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{0EF6CE95-12BC-4538-9DA7-872901B9A92A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Coinbase.AdvancedTrade", "src\Coinbase.AdvancedTrade\Coinbase.AdvancedTrade.csproj", "{18B4ECB1-5B9C-4A9F-B9A2-2B8FDC54A296}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{40FF4DCC-6C16-4EB1-BCB4-4A3AE3E02DCB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Coinbase.AdvancedTrade.Tests", "tests\Coinbase.AdvancedTrade.Tests\Coinbase.AdvancedTrade.Tests.csproj", "{D1B26AD3-BFBC-4605-BECB-D0B718E01909}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{A1E31CC7-48FA-418B-B928-51EF92E674E4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Coinbase.AdvancedTrade.Sample", "samples\Coinbase.AdvancedTrade.Sample\Coinbase.AdvancedTrade.Sample.csproj", "{6B53BA49-7CD7-4FF1-B8BF-E27B8E672F07}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{18B4ECB1-5B9C-4A9F-B9A2-2B8FDC54A296}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18B4ECB1-5B9C-4A9F-B9A2-2B8FDC54A296}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18B4ECB1-5B9C-4A9F-B9A2-2B8FDC54A296}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{18B4ECB1-5B9C-4A9F-B9A2-2B8FDC54A296}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D1B26AD3-BFBC-4605-BECB-D0B718E01909}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D1B26AD3-BFBC-4605-BECB-D0B718E01909}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D1B26AD3-BFBC-4605-BECB-D0B718E01909}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D1B26AD3-BFBC-4605-BECB-D0B718E01909}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6B53BA49-7CD7-4FF1-B8BF-E27B8E672F07}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B53BA49-7CD7-4FF1-B8BF-E27B8E672F07}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B53BA49-7CD7-4FF1-B8BF-E27B8E672F07}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B53BA49-7CD7-4FF1-B8BF-E27B8E672F07}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{18B4ECB1-5B9C-4A9F-B9A2-2B8FDC54A296} = {0EF6CE95-12BC-4538-9DA7-872901B9A92A}
+		{D1B26AD3-BFBC-4605-BECB-D0B718E01909} = {40FF4DCC-6C16-4EB1-BCB4-4A3AE3E02DCB}
+		{6B53BA49-7CD7-4FF1-B8BF-E27B8E672F07} = {A1E31CC7-48FA-418B-B928-51EF92E674E4}
+	EndGlobalSection
+EndGlobal
