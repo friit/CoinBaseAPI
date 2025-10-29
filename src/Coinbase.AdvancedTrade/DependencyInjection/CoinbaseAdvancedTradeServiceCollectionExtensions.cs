@@ -16,10 +16,25 @@ using Polly.Extensions.Http;
 
 namespace Coinbase.AdvancedTrade.DependencyInjection;
 
+/// <summary>
+/// Dependency injection helpers for registering the Coinbase Advanced Trade client.
+/// </summary>
 public static class CoinbaseAdvancedTradeServiceCollectionExtensions
 {
     private const int DefaultRetryCount = 3;
 
+    /// <summary>
+    /// Registers the Coinbase Advanced Trade client and supporting services.
+    /// </summary>
+    /// <param name="services">The service collection.</param>
+    /// <param name="configureOptions">Callback to configure client behavior options.</param>
+    /// <returns>A builder that can be used to configure credentials.</returns>
+    /// <remarks>
+    /// This method does not register credentials by default. Consumers must configure
+    /// an <see cref="Coinbase.AdvancedTrade.Authentication.ICoinbaseCredentialsProvider"/> via the returned builder
+    /// (for example by calling <c>UseOptionsCredentials()</c>) or by registering a custom provider.
+    /// Hosted applications will fail on startup if a provider is not registered.
+    /// </remarks>
     public static ICoinbaseAdvancedTradeBuilder AddCoinbaseAdvancedTradeClient(this IServiceCollection services, Action<CoinbaseAdvancedTradeOptions> configureOptions)
     {
         ArgumentNullException.ThrowIfNull(services);

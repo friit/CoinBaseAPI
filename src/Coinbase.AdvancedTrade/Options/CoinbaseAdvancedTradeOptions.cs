@@ -3,7 +3,8 @@ using System.ComponentModel.DataAnnotations;
 namespace Coinbase.AdvancedTrade.Options;
 
 /// <summary>
-/// Configuration settings for the Coinbase Advanced Trade API client.
+/// Behavioral configuration for the Coinbase Advanced Trade client.
+/// Credentials are configured separately via a credentials provider.
 /// </summary>
 public sealed class CoinbaseAdvancedTradeOptions
 {
