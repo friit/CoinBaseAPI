@@ -11,24 +11,6 @@ public sealed class CoinbaseAdvancedTradeOptions
     private const string DefaultBrokerageApiPath = "api/v3/brokerage/";
 
     /// <summary>
-    /// Gets or sets the API key issued by Coinbase.
-    /// </summary>
-    [Required]
-    public string? ApiKey { get; set; }
-
-    /// <summary>
-    /// Gets or sets the API secret used for HMAC signing (base64 encoded).
-    /// </summary>
-    [Required]
-    public string? ApiSecret { get; set; }
-
-    /// <summary>
-    /// Gets or sets the API passphrase.
-    /// </summary>
-    [Required]
-    public string? Passphrase { get; set; }
-
-    /// <summary>
     /// Gets or sets the base URI for the Coinbase API (defaults to the production REST endpoint).
     /// </summary>
     public Uri BaseUri { get; set; } = DefaultBaseUri;

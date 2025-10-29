@@ -1,27 +1,14 @@
 using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
-using Coinbase.AdvancedTrade.Options;
 
 namespace Coinbase.AdvancedTrade.Authentication;
 
 internal sealed class CoinbaseRequestSigner : ICoinbaseRequestSigner
 {
-    private readonly byte[] _secretKey;
-
-    public CoinbaseRequestSigner(CoinbaseAdvancedTradeOptions options)
+    public string CreateSignature(string apiSecret, DateTimeOffset timestamp, HttpMethod method, string requestPath, string? body)
     {
-        ArgumentNullException.ThrowIfNull(options);
-        if (string.IsNullOrWhiteSpace(options.ApiSecret))
-        {
-            throw new ArgumentException("API secret must be provided for request signing.", nameof(options));
-        }
-
-        _secretKey = Convert.FromBase64String(options.ApiSecret);
-    }
-
-    public string CreateSignature(DateTimeOffset timestamp, HttpMethod method, string requestPath, string? body)
-    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(apiSecret);
         ArgumentNullException.ThrowIfNull(method);
         ArgumentException.ThrowIfNullOrEmpty(requestPath);
 
@@ -31,7 +18,8 @@ internal sealed class CoinbaseRequestSigner : ICoinbaseRequestSigner
 
         var prehash = $"{timestampString}{upperMethod}{requestPath}{payload}";
         var buffer = Encoding.UTF8.GetBytes(prehash);
-        using var hmac = new HMACSHA256(_secretKey);
+        var keyBytes = Convert.FromBase64String(apiSecret);
+        using var hmac = new HMACSHA256(keyBytes);
         var hash = hmac.ComputeHash(buffer);
 
         return Convert.ToBase64String(hash);

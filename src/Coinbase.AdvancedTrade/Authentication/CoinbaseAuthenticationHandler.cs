@@ -1,9 +1,8 @@
 using System.Globalization;
 using System.Net.Http.Headers;
-using Coinbase.AdvancedTrade.Internal;
 using Coinbase.AdvancedTrade.Options;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Coinbase.AdvancedTrade.Authentication;
 
@@ -15,20 +14,20 @@ internal sealed class CoinbaseAuthenticationHandler : DelegatingHandler
     private const string SignatureHeader = "CB-ACCESS-SIGN";
     private const string UserAgentProductName = "CoinbaseAdvancedTradeClient";
 
-    private readonly IOptionsMonitor<CoinbaseAdvancedTradeOptions> _optionsMonitor;
+    private readonly IServiceProvider _serviceProvider;
     private readonly ICoinbaseRequestSigner _signer;
-    private readonly ISystemClock _clock;
+    private readonly TimeProvider _timeProvider;
     private readonly ILogger<CoinbaseAuthenticationHandler> _logger;
 
     public CoinbaseAuthenticationHandler(
-        IOptionsMonitor<CoinbaseAdvancedTradeOptions> optionsMonitor,
+        IServiceProvider serviceProvider,
         ICoinbaseRequestSigner signer,
-        ISystemClock clock,
+        TimeProvider timeProvider,
         ILogger<CoinbaseAuthenticationHandler> logger)
     {
-        _optionsMonitor = optionsMonitor ?? throw new ArgumentNullException(nameof(optionsMonitor));
+        _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
         _signer = signer ?? throw new ArgumentNullException(nameof(signer));
-        _clock = clock ?? throw new ArgumentNullException(nameof(clock));
+        _timeProvider = timeProvider ?? throw new ArgumentNullException(nameof(timeProvider));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
@@ -39,19 +38,20 @@ internal sealed class CoinbaseAuthenticationHandler : DelegatingHandler
             throw new InvalidOperationException("The Coinbase request must have a RequestUri.");
         }
 
-        var options = _optionsMonitor.CurrentValue ?? throw new InvalidOperationException("Coinbase options are not configured.");
-        ValidateOptions(options);
+        using var scope = _serviceProvider.CreateScope();
+        var credentialsProvider = scope.ServiceProvider.GetRequiredService<ICoinbaseCredentialsProvider>();
+        var credentials = await credentialsProvider.GetAsync(cancellationToken).ConfigureAwait(false);
 
-        var timestamp = _clock.UtcNow;
+        var timestamp = _timeProvider.GetUtcNow();
         var timestampText = timestamp.ToUnixTimeSeconds().ToString(CultureInfo.InvariantCulture);
         var requestPath = request.RequestUri.PathAndQuery;
         var body = request.Content is null ? string.Empty : await request.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
 
-        var signature = _signer.CreateSignature(timestamp, request.Method, requestPath, body);
+        var signature = _signer.CreateSignature(credentials.ApiSecret, timestamp, request.Method, requestPath, body);
 
-        PrepareHeaders(request.Headers, options);
-        request.Headers.TryAddWithoutValidation(ApiKeyHeader, options.ApiKey);
-        request.Headers.TryAddWithoutValidation(PassphraseHeader, options.Passphrase);
+        PrepareHeaders(request.Headers);
+        request.Headers.TryAddWithoutValidation(ApiKeyHeader, credentials.ApiKey);
+        request.Headers.TryAddWithoutValidation(PassphraseHeader, credentials.Passphrase);
         request.Headers.TryAddWithoutValidation(TimestampHeader, timestampText);
         request.Headers.TryAddWithoutValidation(SignatureHeader, signature);
 
@@ -60,7 +60,7 @@ internal sealed class CoinbaseAuthenticationHandler : DelegatingHandler
         return await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
     }
 
-    private static void PrepareHeaders(HttpRequestHeaders headers, CoinbaseAdvancedTradeOptions options)
+    private static void PrepareHeaders(HttpRequestHeaders headers)
     {
         if (!headers.UserAgent.Any())
         {
@@ -73,21 +73,5 @@ internal sealed class CoinbaseAuthenticationHandler : DelegatingHandler
         headers.Remove(SignatureHeader);
     }
 
-    private static void ValidateOptions(CoinbaseAdvancedTradeOptions options)
-    {
-        if (string.IsNullOrWhiteSpace(options.ApiKey))
-        {
-            throw new InvalidOperationException("Coinbase API key is required.");
-        }
-
-        if (string.IsNullOrWhiteSpace(options.Passphrase))
-        {
-            throw new InvalidOperationException("Coinbase API passphrase is required.");
-        }
-
-        if (string.IsNullOrWhiteSpace(options.ApiSecret))
-        {
-            throw new InvalidOperationException("Coinbase API secret is required.");
-        }
-    }
+    
 }

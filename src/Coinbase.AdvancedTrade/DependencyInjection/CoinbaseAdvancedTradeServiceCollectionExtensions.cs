@@ -7,7 +7,6 @@ using Coinbase.AdvancedTrade.Clients.Orders;
 using Coinbase.AdvancedTrade.Clients.Products;
 using Coinbase.AdvancedTrade.Authentication;
 using Coinbase.AdvancedTrade.Http;
-using Coinbase.AdvancedTrade.Internal;
 using Coinbase.AdvancedTrade.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -21,24 +20,18 @@ public static class CoinbaseAdvancedTradeServiceCollectionExtensions
 {
     private const int DefaultRetryCount = 3;
 
-    public static IServiceCollection AddCoinbaseAdvancedTradeClient(this IServiceCollection services, Action<CoinbaseAdvancedTradeOptions> configureOptions)
+    public static ICoinbaseAdvancedTradeBuilder AddCoinbaseAdvancedTradeClient(this IServiceCollection services, Action<CoinbaseAdvancedTradeOptions> configureOptions)
     {
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(configureOptions);
-
+        
         services.AddOptions<CoinbaseAdvancedTradeOptions>()
             .Configure(configureOptions)
-            .ValidateDataAnnotations()
-            .Validate(options => !string.IsNullOrWhiteSpace(options.ApiKey), "API key is required.")
-            .Validate(options => !string.IsNullOrWhiteSpace(options.ApiSecret), "API secret is required.")
-            .Validate(options => !string.IsNullOrWhiteSpace(options.Passphrase), "API passphrase is required.");
+            .ValidateDataAnnotations();
 
-        services.TryAddSingleton<ISystemClock>(_ => UtcSystemClock.Instance);
-        services.TryAddSingleton<ICoinbaseRequestSigner>(sp =>
-        {
-            var opts = sp.GetRequiredService<IOptionsMonitor<CoinbaseAdvancedTradeOptions>>().CurrentValue;
-            return new CoinbaseRequestSigner(opts);
-        });
+        services.TryAddSingleton<TimeProvider>(_ => TimeProvider.System);
+        services.TryAddSingleton<ICoinbaseRequestSigner, CoinbaseRequestSigner>();
+        services.AddHostedService<CoinbaseSetupValidationHostedService>();
 
         services.AddTransient<CoinbaseAuthenticationHandler>();
 
@@ -59,7 +52,7 @@ public static class CoinbaseAdvancedTradeServiceCollectionExtensions
         services.TryAddSingleton<IPublicMarketClient, PublicMarketClient>();
         services.TryAddSingleton<ICoinbaseAdvancedTradeClient, CoinbaseAdvancedTradeClient>();
 
-        return services;
+        return new CoinbaseAdvancedTradeBuilder(services);
     }
 
     private static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()

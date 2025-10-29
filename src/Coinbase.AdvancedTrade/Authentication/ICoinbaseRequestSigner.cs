@@ -5,5 +5,5 @@ namespace Coinbase.AdvancedTrade.Authentication;
 /// </summary>
 internal interface ICoinbaseRequestSigner
 {
-    string CreateSignature(DateTimeOffset timestamp, HttpMethod method, string requestPath, string? body);
+    string CreateSignature(string apiSecret, DateTimeOffset timestamp, HttpMethod method, string requestPath, string? body);
 }

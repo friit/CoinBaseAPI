@@ -1,9 +1,11 @@
 using Coinbase.AdvancedTrade.Clients.Core;
 using Coinbase.AdvancedTrade.DependencyInjection;
+using Coinbase.AdvancedTrade.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 var configuration = SampleOptions.FromEnvironment();
+// For the sample, require credentials env vars to be present.
 if (!configuration.IsConfigured)
 {
     Console.WriteLine("Configure COINBASE_API_KEY, COINBASE_API_SECRET, and COINBASE_API_PASSPHRASE environment variables before running the sample.");
@@ -14,10 +16,17 @@ var services = new ServiceCollection();
 services.AddLogging(logging => logging.AddSimpleConsole(options => options.SingleLine = true));
 services.AddCoinbaseAdvancedTradeClient(options =>
 {
-    options.ApiKey = configuration.ApiKey;
-    options.ApiSecret = configuration.ApiSecret;
-    options.Passphrase = configuration.Passphrase;
     options.BaseUri = configuration.BaseUri;
+})
+// Configure credentials via options and enable the options-based provider
+.UseOptionsCredentials();
+
+// Bind credentials options directly for the sample
+services.Configure<CoinbaseCredentialsOptions>(opts =>
+{
+    opts.ApiKey = configuration.ApiKey;
+    opts.ApiSecret = configuration.ApiSecret;
+    opts.Passphrase = configuration.Passphrase;
 });
 
 using var provider = services.BuildServiceProvider();

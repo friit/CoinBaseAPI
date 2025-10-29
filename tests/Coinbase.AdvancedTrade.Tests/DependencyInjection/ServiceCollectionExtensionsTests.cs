@@ -22,9 +22,6 @@ public class ServiceCollectionExtensionsTests
 
         services.AddCoinbaseAdvancedTradeClient(options =>
         {
-            options.ApiKey = "key";
-            options.ApiSecret = Convert.ToBase64String(Guid.NewGuid().ToByteArray());
-            options.Passphrase = "pass";
             options.BaseUri = new Uri("https://example.com/");
         });
 
